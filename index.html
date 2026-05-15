@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESHU CODEX | DATA BYPASS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --neon-blue: #00f2ff;
+            --bg-dark: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header-text {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 40px 0;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue); }
+            to { text-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-green); color: var(--neon-green); }
+        }
+
+        .search-container {
+            background: var(--glass);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.2);
+            width: 90%;
+            max-width: 550px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        input {
+            width: 85%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+            border-radius: 8px;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        
+        input:focus { box-shadow: 0 0 15px var(--neon-green); }
+
+        button.search-btn {
+            margin-top: 25px;
+            padding: 12px 40px;
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+
+        button.search-btn:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 30px var(--neon-blue);
+        }
+
+        .owner-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 40px 0;
+        }
+
+        .btn-link {
+            text-decoration: none;
+            padding: 14px 25px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            transition: 0.4s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-link:hover { transform: translateY(-5px) scale(1.05); }
+        .ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .tg { background: #0088cc; }
+        .wa { background: #25d366; }
+
+        .results {
+            width: 90%;
+            max-width: 850px;
+            margin-top: 20px;
+            padding-bottom: 120px;
+        }
+
+        .section-card {
+            background: rgba(0, 0, 0, 0.85);
+            border-left: 5px solid var(--neon-green);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.15);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: var(--neon-blue);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.3);
+            padding-bottom: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-item { margin: 8px 0; font-size: 1rem; line-height: 1.5; color: #ccc; }
+        .data-item span { color: var(--neon-green); font-weight: bold; }
+
+        .tg-float {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #0088cc;
+            color: white;
+            padding: 18px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 0 20px #0088cc;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+        .tg-float:hover { transform: scale(1.1); box-shadow: 0 0 30px #0088cc; }
+    </style>
+</head>
+<body>
+
+    <div class="header-text">ESHU CODEX</div>
+
+    <div class="search-container">
+        <i class="fas fa-terminal" style="font-size: 2.5rem; color: var(--neon-green); margin-bottom: 10px;"></i>
+        <h2 style="color: var(--neon-green); margin-bottom: 20px; letter-spacing: 2px;">SECURE DATABASE ACCESS</h2>
+        <input type="text" id="phoneInput" placeholder="Enter Target Number (e.g. +91...)">
+        <br>
+        <button class="search-btn" onclick="fetchData()">START EXPLOIT</button>
+    </div>
+
+    <div class="owner-section">
+        <a href="https://www.instagram.com/eshucordex?igsh=MWsxMG9tajNlN2p0OA==" class="btn-link ig" target="_blank">
+            <i class="fab fa-instagram"></i> INSTAGRAM
+        </a>
+        <a href="https://t.me/eshucordex143" class="btn-link tg" target="_blank">
+            <i class="fab fa-telegram"></i> TELEGRAM
+        </a>
+        <a href="https://wa.me/584165280421" class="btn-link wa" target="_blank">
+            <i class="fab fa-whatsapp"></i> WHATSAPP
+        </a>
+    </div>
+
+    <div id="output" class="results"></div>
+
+    <a href="https://t.me/eshucordex143" class="tg-float">
+        <i class="fab fa-telegram-plane"></i> JOIN TELEGRAM
+    </a>
+
+    <script>
+        async function fetchData() {
+            let input = document.getElementById('phoneInput').value;
+            
+            // AUTOMATIC SANITIZATION: Removes +91, spaces, and non-digits
+            let cleanNum = input.replace(/\s+/g, ''); // Remove spaces
+            if (cleanNum.startsWith('+91')) cleanNum = cleanNum.replace('+91', '');
+            else if (cleanNum.startsWith('91') && cleanNum.length > 10) cleanNum = cleanNum.substring(2);
+            cleanNum = cleanNum.replace(/\D/g, ''); // Remove any other non-digits
+
+            if (cleanNum.length < 10) {
+                alert("⚠️ ALERT: TARGET NUMBER MUST BE 10 DIGITS.");
+                return;
+            }
+
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '<div style="text-align:center; padding: 40px;"><p style="color:var(--neon-green); font-weight:bold; animation: blink 0.8s infinite;">📡 INJECTING PAYLOAD... BYPASSING SECURITY... ESHU CODEX ONLINE...</p></div>';
+
+            // CORS Proxy + API
+            const proxy = "https://api.allorigins.win/get?url=";
+            const apiUrl = `https://paid.proportalx.workers.dev/number?key=my&num=${cleanNum}`;
+
+            try {
+                const response = await fetch(proxy + encodeURIComponent(apiUrl));
+                const blob = await response.json();
+                const data = JSON.parse(blob.contents); // AllOrigins returns data in .contents
+                
+                if (data.result && data.result.length > 0) {
+                    displayResults(data.result);
+                } else {
+                    outputDiv.innerHTML = '<p style="color:#ff4444; text-align:center; padding: 20px; border: 1px solid #ff4444; border-radius: 10px;">❌ ACCESS DENIED: NO RECORDS FOUND IN DATABASE.</p>';
+                }
+            } catch (error) {
+                console.error(error);
+                outputDiv.innerHTML = '<p style="color:#ff4444; text-align:center; padding: 20px; border: 1px solid #ff4444; border-radius: 10px;">❌ CONNECTION ERROR: FIREWALL BLOCKED REQUEST.<br>Check API status or Network.</p>';
+            }
+        }
+
+        function displayResults(results) {
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ''; 
+
+            let sections = {
+                phones: [],
+                address: [],
+                aadhar: [],
+                credentials: [],
+                names: [],
+                fathers: [],
+                others: []
+            };
+
+            results.forEach(line => {
+                if (!line || line.trim() === "" || line.includes("---") || line.includes("@proportalx")) return;
+                
+                let lower = line.toLowerCase();
+                if (lower.includes("mobile:")) sections.phones.push(line);
+                else if (lower.includes("address:")) sections.address.push(line);
+                else if (lower.includes("document number:")) sections.aadhar.push(line);
+                else if (lower.includes("email:") || lower.includes("password:")) sections.credentials.push(line);
+                else if (lower.includes("full name:")) sections.names.push(line);
+                else if (lower.includes("father:")) sections.fathers.push(line);
+                else sections.others.push(line);
+            });
+
+            const createSection = (title, icon, items) => {
+                if (items.length === 0) return '';
+                return `
+                    <div class="section-card">
+                        <div class="section-title">${icon} ${title}</div>
+                        ${items.map(i => {
+                            // Redacting Aadhaar digits for safety while keeping the label
+                            let display = i.replace(/Document number:\s*(\d{12})/, "Aadhar number: [Redacted for Privacy]");
+                            return `<p class="data-item"><span>🚀</span> ${display}</p>`;
+                        }).join('')}
+                    </div>
+                `;
+            };
+
+            outputDiv.innerHTML = `
+                <div class="section-card" style="border-color: var(--neon-blue); text-align:center; border-left:none; border-top:5px solid var(--neon-blue);">
+                    <div class="section-title" style="justify-content:center;">👑 SYSTEM OWNER</div>
+                    <p style="color:var(--neon-blue); font-weight:bold; font-size:1.6rem; margin: 10px 0;">ESHU CODEX</p>
+                    <div style="display:flex; justify-content:center; gap:20px; margin-top:10px;">
+                        <a href="https://t.me/eshucordex143" style="color:#0088cc; text-decoration:none; font-size:0.8rem;">TELEGRAM: @eshucordex143</a>
+                        <a href="https://wa.me/584165280421" style="color:#25d366; text-decoration:none; font-size:0.8rem;">WHATSAPP: ESHU CODEX</a>
+                    </div>
+                </div>
+
+                ${createSection('LINKED NUMBERS', '📱', sections.phones)}
+                ${createSection('GEO-LOCATION ADDRESS', '📍', sections.address)}
+                ${createSection('AADHAR NUMBER', '🆔', sections.aadhar)}
+                ${createSection('EMAIL & ENCRYPTED PASSWORDS', '🔐', sections.credentials)}
+                ${createSection('FULL TARGET NAME', '👤', sections.names)}
+                ${createSection('FATHER/OWNER NAME', '👨', sections.fathers)}
+                ${createSection('OTHER SYSTEM METADATA', '📊', sections.others)}
+            `;
+        }
+    </script>
+
+    <style>
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</body>
+          </html>
+          
