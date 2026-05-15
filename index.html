@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Lookup | @Eshucording</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: #020617; 
+            color: #e2e8f0; 
+            font-family: 'Inter', sans-serif; 
+        }
+        .glass { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        .loader { 
+            border-top-color: #3b82f6; 
+            animation: spinner 0.8s linear infinite; 
+        }
+        @keyframes spinner { to { transform: rotate(360deg); } }
+        .mono { font-family: 'Fira Code', monospace; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-xl w-full">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-2">
+                Information <span class="text-blue-500">Lookup</span>
+            </h1>
+            <p class="text-slate-400 font-medium">Developed by <span class="text-blue-400">@Eshucording</span></p>
+        </div>
+
+        <div class="glass p-8 rounded-3xl shadow-2xl mb-8">
+            <div class="space-y-4">
+                <label class="block text-sm font-semibold text-slate-300 ml-1">Phone Number</label>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="phoneInput" 
+                        placeholder="+91 80956 80694" 
+                        class="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-white placeholder:text-slate-600">
+                    <button onclick="fetchData()" id="btn" 
+                        class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-blue-900/20">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden flex flex-col items-center justify-center py-12">
+            <div class="loader ease-linear rounded-full border-4 border-slate-800 h-12 w-12 mb-4"></div>
+            <p class="text-slate-400 animate-pulse">Fetching records...</p>
+        </div>
+
+        <div id="resultCard" class="hidden glass rounded-3xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-4 duration-500">
+            <div class="bg-blue-600/10 border-b border-white/5 px-6 py-4 flex justify-between items-center">
+                <span class="text-blue-400 font-bold text-xs uppercase tracking-widest">Database Result</span>
+                <span class="text-slate-500 text-[10px] mono">API: @proportalx</span>
+            </div>
+            
+            <div id="dataContent" class="p-6 space-y-3 mono text-sm leading-relaxed text-slate-300">
+                </div>
+
+            <div class="bg-slate-900/50 px-6 py-3 text-center border-t border-white/5">
+                <p class="text-[11px] text-slate-500">Data provided via @Eshucording System</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const input = document.getElementById('phoneInput').value;
+            const content = document.getElementById('dataContent');
+            const card = document.getElementById('resultCard');
+            const loader = document.getElementById('loading');
+            
+            // 1. CLEANING LOGIC: Remove +, spaces, dashes, and the 91 prefix
+            let cleanNum = input.replace(/\D/g, ''); 
+            if (cleanNum.startsWith('91') && cleanNum.length > 10) {
+                cleanNum = cleanNum.substring(2); 
+            }
+
+            if (cleanNum.length < 10) {
+                alert("Error: Please enter a valid 10-digit mobile number.");
+                return;
+            }
+
+            // UI Reset
+            card.classList.add('hidden');
+            loader.classList.remove('hidden');
+            content.innerHTML = '';
+
+            try {
+                // The Original API URL
+                const targetUrl = `https://paid.proportalx.workers.dev/number?key=my&num=${cleanNum}`;
+                
+                // Using a CORS Proxy to bypass the 'Error fetching data' issue
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                const outerData = await response.json();
+                
+                // The proxy wraps the result in a 'contents' string, so we parse it
+                const data = JSON.parse(outerData.contents);
+
+                if (data.result && data.result.length > 0) {
+                    // Filter out empty lines and separators
+                    const filteredResults = data.result.filter(line => 
+                        line.trim() !== "" && 
+                        !line.includes('---') && 
+                        !line.includes('@proportalx')
+                    );
+
+                    filteredResults.forEach(line => {
+                        const div = document.createElement('div');
+                        div.className = "flex items-start gap-2 border-b border-white/5 pb-2 last:border-0";
+                        div.innerHTML = `<span class="text-blue-500">❯</span> <span>${line}</span>`;
+                        content.appendChild(div);
+                    });
+
+                    loader.classList.add('hidden');
+                    card.classList.remove('hidden');
+                } else {
+                    throw new Error('No records found');
+                }
+
+            } catch (error) {
+                loader.classList.add('hidden');
+                alert("Error: " + error.message + ". The API might be down or blocked.");
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
