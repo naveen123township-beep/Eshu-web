@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Lookup | @Eshucording</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #020617; color: #e2e8f0; font-family: sans-serif; min-height: 100vh; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .loader { border-top-color: #3b82f6; animation: spinner 0.8s linear infinite; }
+        @keyframes spinner { to { transform: rotate(360deg); } }
+        
+        .data-line {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: pre-wrap;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* Glowing Buttons Effect */
+        .glow-btn {
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .glow-wa { box-shadow: 0 0 10px #25d366; border-color: #25d366; }
+        .glow-wa:hover { box-shadow: 0 0 20px #25d366; background: #25d366; color: #fff; }
+        
+        .glow-tg { box-shadow: 0 0 10px #0088cc; border-color: #0088cc; }
+        .glow-tg:hover { box-shadow: 0 0 20px #0088cc; background: #0088cc; color: #fff; }
+        
+        .glow-ig { box-shadow: 0 0 10px #e1306c; border-color: #e1306c; }
+        .glow-ig:hover { box-shadow: 0 0 20px #e1306c; background: #e1306c; color: #fff; }
+
+        /* Floating TG Button */
+        .tg-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0088cc;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 0 15px #0088cc;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse-tg 2s infinite;
+        }
+        @keyframes pulse-tg {
+            0% { box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 136, 204, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 136, 204, 0); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-xl w-full">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl font-extrabold text-white mb-2 tracking-widest">ESHU <span class="text-blue-500">CODEX</span></h1>
+            <p class="text-slate-400">Developed by <span class="text-blue-400">@Eshucording</span></p>
+        </div>
+
+        <div id="socialLinks" class="flex flex-col gap-3 mb-8">
+            <a href="https://wa.me/584165280421" target="_blank" class="glow-btn glow-wa flex items-center justify-center gap-3 p-3 rounded-xl font-bold text-green-400">
+                <i class="fab fa-whatsapp text-xl"></i> WHATSAPP
+            </a>
+            <div class="flex gap-3">
+                <a href="https://t.me/eshucordex143" target="_blank" class="glow-btn glow-tg flex-1 flex items-center justify-center gap-3 p-3 rounded-xl font-bold text-blue-400">
+                    <i class="fab fa-telegram-plane"></i> TELEGRAM
+                </a>
+                <a href="https://www.instagram.com/eshucordex?igsh=MWsxMG9tajNlN2p0OA==" target="_blank" class="glow-btn glow-ig flex-1 flex items-center justify-center gap-3 p-3 rounded-xl font-bold text-pink-400">
+                    <i class="fab fa-instagram"></i> INSTAGRAM
+                </a>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-3xl shadow-2xl mb-8">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="phoneInput" placeholder="Enter Number (+91...)" 
+                    class="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+                <button onclick="fetchData()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-blue-500/20">
+                    SEARCH
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden flex flex-col items-center py-12">
+            <div class="loader rounded-full border-4 border-slate-800 h-12 w-12 mb-4"></div>
+            <p class="text-blue-400 animate-pulse font-bold">BYPASSING DATABASE...</p>
+        </div>
+
+        <div id="resultCard" class="hidden glass rounded-3xl overflow-hidden shadow-2xl mb-10">
+            <div class="bg-blue-600/10 border-b border-white/5 px-6 py-4 flex justify-between items-center">
+                <span class="text-blue-400 font-bold text-xs uppercase tracking-tighter">DATA EXPLOIT SUCCESS</span>
+                <span class="text-slate-500 text-[10px]">Verified: @Eshucording</span>
+            </div>
+            <div id="dataContent" class="p-6 space-y-4 font-mono text-sm text-slate-300"></div>
+            <button onclick="window.location.reload()" class="w-full py-3 bg-slate-800 text-xs text-slate-400 hover:text-white transition-colors">NEW SEARCH</button>
+        </div>
+    </div>
+
+    <a href="https://t.me/eshucordex143" target="_blank" class="tg-float">
+        <i class="fab fa-telegram-plane"></i> JOIN TELEGRAM
+    </a>
+
+    <script>
+        async function fetchData() {
+            const input = document.getElementById('phoneInput').value;
+            const content = document.getElementById('dataContent');
+            const card = document.getElementById('resultCard');
+            const loader = document.getElementById('loading');
+            const socials = document.getElementById('socialLinks');
+            
+            let cleanNum = input.trim().replace(/\s+/g, '').replace(/-/g, '');
+            if (cleanNum.startsWith('+91')) cleanNum = cleanNum.substring(3);
+            else if (cleanNum.startsWith('91') && cleanNum.length > 10) cleanNum = cleanNum.substring(2);
+            cleanNum = cleanNum.replace(/\D/g, '');
+
+            if (cleanNum.length !== 10) {
+                alert("⚠️ Error: Target number must be 10 digits.");
+                return;
+            }
+
+            // Hide UI elements to focus on output
+            socials.classList.add('hidden');
+            card.classList.add('hidden');
+            loader.classList.remove('hidden');
+            content.innerHTML = '';
+
+            try {
+                const response = await fetch(`/api/lookup?num=${cleanNum}`);
+                const data = await response.json();
+
+                if (data.result && data.result.length > 0) {
+                    data.result.forEach(line => {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine !== "" && !trimmedLine.includes('---') && !trimmedLine.includes('@proportalx')) {
+                            const div = document.createElement('div');
+                            div.className = "data-line border-b border-white/5 pb-3 last:border-0";
+                            div.innerHTML = `<span class="text-blue-500 mr-2 flex-shrink-0">❯</span><span>${trimmedLine}</span>`;
+                            content.appendChild(div);
+                        }
+                    });
+                    loader.classList.add('hidden');
+                    card.classList.remove('hidden');
+                } else {
+                    alert("No data found.");
+                    loader.classList.add('hidden');
+                    socials.classList.remove('hidden');
+                }
+            } catch (error) {
+                loader.classList.add('hidden');
+                socials.classList.remove('hidden');
+                alert("Connection Error. Is your Vercel API deployed?");
+            }
+        }
+    </script>
+</body>
+  </html>
+                  
