@@ -6,14 +6,13 @@
     <title>Pro Lookup | @Eshucording</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <style>
         body { background: #020617; color: #e2e8f0; font-family: sans-serif; min-height: 100vh; overflow-x: hidden; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .loader { border-top-color: #3b82f6; animation: spinner 0.8s linear infinite; }
         @keyframes spinner { to { transform: rotate(360deg); } }
         
-        /* Photo Background Glow */
+        /* Optimized Photo Glow Grid background */
         .img-container {
             position: relative;
             display: inline-block;
@@ -23,32 +22,34 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 160px; height: 160px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, rgba(0, 242, 255, 0) 70%);
+            width: 170px; height: 170px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(0, 0, 0, 0) 70%);
             border-radius: 50%;
             z-index: -1;
-            animation: pulse-glow 3s infinite alternate;
+            animation: pulse-glow 2.5s infinite alternate;
         }
         @keyframes pulse-glow {
-            from { opacity: 0.5; scale: 0.9; }
-            to { opacity: 1; scale: 1.2; }
+            from { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
         }
 
+        /* Accelerated Floating Animation */
         .float-img {
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
             object-fit: cover;
             border-radius: 50%;
             border: 3px solid #3b82f6;
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.8);
-            animation: floating 3s ease-in-out infinite;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
+            animation: floating 3.5s ease-in-out infinite;
+            will-change: transform;
         }
-
         @keyframes floating {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            50% { transform: translateY(-12px); }
         }
 
+        /* Color Changing Shiny Title Text */
         .shiny-text {
             font-size: 2.5rem;
             font-weight: 900;
@@ -58,25 +59,23 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shine 3s linear infinite;
-            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+            filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
         }
-
         @keyframes shine {
             to { background-position: 200% center; }
         }
 
+        /* Pure CSS Floating Input Container (Zero-Lag Replacement) */
         .keyboard-float {
-            animation: k-float 4s ease-in-out infinite;
-            transform-style: preserve-3d;
-            will-change: transform; /* Optimized Rendering Fix */
+            animation: container-float 4s ease-in-out infinite;
+            will-change: transform;
+        }
+        @keyframes container-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
         }
 
-        @keyframes k-float {
-            0%, 100% { transform: translateY(0) rotateX(0deg); }
-            50% { transform: translateY(-10px) rotateX(5deg); }
-        }
-
-        /* 3D Small Telegram Icon Button */
+        /* 3D Floating Permanent Telegram Button */
         .tg-float-3d {
             position: fixed;
             bottom: 25px;
@@ -91,20 +90,18 @@
             justify-content: center;
             font-size: 24px;
             text-decoration: none;
-            box-shadow: 0 0 20px rgba(0, 136, 204, 0.7);
+            box-shadow: 0 8px 20px rgba(0, 136, 204, 0.5);
             z-index: 1000;
-            animation: float-3d 3s infinite ease-in-out, icon-shine 2s infinite;
-            transform-style: preserve-3d;
+            animation: button-float 3s infinite ease-in-out, icon-shine 2s infinite;
+            will-change: transform;
         }
-
-        @keyframes float-3d {
-            0%, 100% { transform: translateY(0) rotateY(0); }
-            50% { transform: translateY(-15px) rotateY(20deg); }
+        @keyframes button-float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(10deg); }
         }
-
         @keyframes icon-shine {
             0%, 100% { box-shadow: 0 0 15px #0088cc; filter: brightness(1); }
-            50% { box-shadow: 0 0 30px #00f2ff; filter: brightness(1.3); }
+            50% { box-shadow: 0 0 25px #00f2ff; filter: brightness(1.2); }
         }
 
         .data-line {
@@ -112,18 +109,18 @@
             overflow-wrap: break-word;
             word-break: break-word;
             white-space: pre-wrap;
-            display: block;
         }
 
-        .glow-btn { transition: 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .glow-btn { transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
         .glow-wa { box-shadow: 0 0 10px #25d366; border-color: #25d366; }
         .glow-tg { box-shadow: 0 0 10px #0088cc; border-color: #0088cc; }
         .glow-ig { box-shadow: 0 0 10px #e1306c; border-color: #e1306c; }
         
-        .source-container {
+        .source-block {
             border-left: 3px solid #3b82f6;
             padding-left: 1rem;
-            margin-bottom: 1.5rem;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 0 12px 12px 0;
         }
     </style>
 </head>
@@ -152,10 +149,10 @@
             </div>
         </div>
 
-        <div class="glass p-8 rounded-3xl shadow-2xl mb-8 keyboard-float" data-tilt data-tilt-max="15">
+        <div class="glass p-6 rounded-3xl shadow-2xl mb-8 keyboard-float">
             <div class="flex flex-col sm:flex-row gap-3">
                 <input type="text" id="phoneInput" placeholder="Enter Number (e.g. 80956...)" 
-                    class="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+                    class="flex-1 bg-slate-900/60 border border-slate-700 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white font-mono">
                 <button onclick="fetchData()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-blue-500/20">
                     SEARCH
                 </button>
@@ -164,16 +161,16 @@
 
         <div id="loading" class="hidden flex flex-col items-center py-12">
             <div class="loader rounded-full border-4 border-slate-800 h-12 w-12 mb-4"></div>
-            <p class="text-blue-400 animate-pulse font-bold">BYPASSING DATABASE...</p>
+            <p class="text-blue-400 animate-pulse font-bold tracking-wider">BYPASSING DATABASE...</p>
         </div>
 
         <div id="resultCard" class="hidden glass rounded-3xl overflow-hidden shadow-2xl mb-10">
             <div class="bg-blue-600/10 border-b border-white/5 px-6 py-4 flex justify-between items-center">
-                <span class="text-blue-400 font-bold text-xs uppercase tracking-tighter">DATA EXPLOIT SUCCESS</span>
+                <span class="text-blue-400 font-bold text-xs uppercase tracking-widest">DATA EXPLOIT SUCCESS</span>
                 <span class="text-slate-500 text-[10px]">Verified: @Eshucording</span>
             </div>
             <div id="dataContent" class="p-6 space-y-6 font-mono text-sm text-slate-300"></div>
-            <button onclick="window.location.reload()" class="w-full py-3 bg-slate-800 text-xs text-slate-400 hover:text-white transition-colors">NEW SEARCH</button>
+            <button onclick="window.location.reload()" class="w-full py-4 bg-slate-900/80 text-xs text-slate-400 hover:text-white font-bold tracking-wide transition-colors border-t border-white/5">NEW SEARCH</button>
         </div>
     </div>
 
@@ -182,31 +179,24 @@
     </a>
 
     <script>
-        VanillaTilt.init(document.querySelector(".keyboard-float"), {
-            max: 15,
-            speed: 400,
-            glare: true,
-            "max-glare": 0.2,
-        });
-
         async function fetchData() {
-            const input = document.getElementById('phoneInput').value;
+            const input = document.getElementById('phoneInput').value.trim();
             const content = document.getElementById('dataContent');
             const card = document.getElementById('resultCard');
             const loader = document.getElementById('loading');
             const socials = document.getElementById('socialLinks');
             
-            // Clean out all non-digits, strips explicit signs
-            let cleanNum = input.trim().replace(/\s+/g, '').replace(/[-+]/g, '');
-            cleanNum = cleanNum.replace(/\D/g, ''); 
+            // Clean non-digits out completely
+            let cleanNum = input.replace(/\s+/g, '').replace(/[-+]/g, '');
+            cleanNum = cleanNum.replace(/\D/g, '');
 
             if (cleanNum.length === 0) {
-                alert("⚠️ Error: Enter a valid number.");
+                alert("⚠️ Error: Please enter a target number.");
                 return;
             }
 
-            // Normalization: If user omits '91', implicitly prefix it
-            if (!cleanNum.startsWith('91') && cleanNum.length === 10) {
+            // Client side preparation helper for 10 digits
+            if (cleanNum.length === 10 && !cleanNum.startsWith('91')) {
                 cleanNum = '91' + cleanNum;
             }
 
@@ -220,63 +210,54 @@
                 const resData = await response.json();
 
                 if (resData.status && resData.data && Object.keys(resData.data).length > 0) {
+                    // Optimized DOM fragment instantiation to drop lag down to 0%
                     const fragment = document.createDocumentFragment();
 
-                    // Map through each database block dynamically
                     Object.keys(resData.data).forEach(sourceKey => {
-                        const currentSource = resData.data[sourceKey];
+                        const sourceObj = resData.data[sourceKey];
                         
-                        // Main Structural Container for individual log sources
-                        const sourceWrapper = document.createElement('div');
-                        sourceWrapper.className = "source-container mb-6 border-l-2 border-blue-500 pl-4";
-
-                        // Header component layout
-                        const header = document.createElement('div');
-                        header.className = "text-blue-400 font-bold text-base mb-1 flex items-center gap-2";
-                        header.innerHTML = `<span class="text-xs">❯</span> ${currentSource.title || sourceKey}`;
-                        sourceWrapper.appendChild(header);
-
-                        // Safe handling of embedded collection datasets
-                        if (Array.isArray(currentSource.records) && currentSource.records.length > 0) {
-                            currentSource.records.forEach(record => {
+                        // Parse inside record chains directly
+                        if (sourceObj.records && Array.isArray(sourceObj.records)) {
+                            sourceObj.records.forEach(record => {
+                                const wrapper = document.createElement('div');
+                                wrapper.className = "source-block p-4 mb-4 space-y-2";
+                                
                                 Object.entries(record).forEach(([key, val]) => {
                                     if (val && String(val).trim() !== "") {
                                         const line = document.createElement('div');
-                                        line.className = "data-line text-slate-300 font-mono text-xs py-1 border-b border-white/5";
-                                        
-                                        // Mask Aadhaar numbers from any explicit leakage source layout safely
-                                        let finalValue = val;
-                                        if (key === "DocumentNumber") {
-                                            finalValue = "[REDACTED BY ESHU CODEX]";
-                                        }
-
-                                        line.innerHTML = `<span class="text-blue-500 font-bold mr-2">${key}:</span><span>${finalValue}</span>`;
-                                        sourceWrapper.appendChild(line);
+                                        line.className = "flex items-start text-xs border-b border-white/5 pb-1 last:border-0";
+                                        line.innerHTML = `
+                                            <span class="text-blue-500 mr-2 font-bold flex-shrink-0">❯</span>
+                                            <span class="text-blue-400 font-semibold mr-2 min-w-[100px]">${key}:</span>
+                                            <span class="text-slate-200 break-all">${val}</span>
+                                        `;
+                                        wrapper.appendChild(line);
                                     }
                                 });
+                                fragment.appendChild(wrapper);
                             });
-                        } else {
-                            const emptyLine = document.createElement('div');
-                            emptyLine.className = "text-slate-500 italic text-xs";
-                            emptyLine.innerText = "No structured parameters found inside logs.";
-                            sourceWrapper.appendChild(emptyLine);
                         }
-
-                        fragment.appendChild(sourceWrapper);
                     });
+
+                    if (fragment.children.length === 0) {
+                        alert("No clean parameter records matched inside logs.");
+                        loader.classList.add('hidden');
+                        socials.classList.remove('hidden');
+                        return;
+                    }
 
                     content.appendChild(fragment);
                     loader.classList.add('hidden');
                     card.classList.remove('hidden');
                 } else {
-                    alert("No log logs identified matching the criteria.");
+                    alert("No log profiles identified matching the criteria.");
                     loader.classList.add('hidden');
                     socials.classList.remove('hidden');
                 }
             } catch (error) {
                 loader.classList.add('hidden');
                 socials.classList.remove('hidden');
-                alert("Connection failed while executing API pipeline verification.");
+                alert("Connection architecture error occurred.");
             }
         }
     </script>
