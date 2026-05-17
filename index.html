@@ -3,101 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raw Data Dashboard</title>
+    <title>Pro Lookup | @Eshucording</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: #e2e8f0; font-family: sans-serif; min-height: 100vh; }
+        body { background: #020617; color: #e2e8f0; font-family: sans-serif; min-height: 100vh; overflow-x: hidden; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .loader { border-top-color: #3b82f6; animation: spinner 0.8s linear infinite; }
         @keyframes spinner { to { transform: rotate(360deg); } }
         
-        /* Preformatted text block styling to prevent any interface lag */
-        .raw-display {
+        /* Smooth Profile Picture Glow */
+        .img-container {
+            position: relative;
+            display: inline-block;
+        }
+        .img-container::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse-glow 2.5s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        /* 60FPS CSS Floating Layout */
+        .float-img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #3b82f6;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
+            animation: floating 3.5s ease-in-out infinite;
+            will-change: transform;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .shiny-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #00f2ff, #00ff41, #3b82f6, #00f2ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+            filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .keyboard-float {
+            animation: container-float 4s ease-in-out infinite;
+            will-change: transform;
+        }
+        @keyframes container-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* Anti-Lag Floating Telegram Button */
+        .tg-float-3d {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #0088cc;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(0, 136, 204, 0.5);
+            z-index: 1000;
+            animation: button-float 3s infinite ease-in-out, icon-shine 2s infinite;
+            will-change: transform;
+        }
+        @keyframes button-float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(10deg); }
+        }
+        @keyframes icon-shine {
+            0%, 100% { box-shadow: 0 0 15px #0088cc; filter: brightness(1); }
+            50% { box-shadow: 0 0 25px #00f2ff; filter: brightness(1.2); }
+        }
+
+        .glow-btn { transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
+        .glow-wa { box-shadow: 0 0 10px #25d366; border-color: #25d366; }
+        .glow-tg { box-shadow: 0 0 10px #0088cc; border-color: #0088cc; }
+        .glow-ig { box-shadow: 0 0 10px #e1306c; border-color: #e1306c; }
+
+        /* Raw Terminal Code Output Block styling */
+        .raw-output {
             background: #090d16;
             border: 1px solid rgba(59, 130, 246, 0.2);
             color: #38bdf8;
             font-family: 'Courier New', Courier, monospace;
             font-size: 12px;
-            line-height: 1.5;
+            line-height: 1.6;
             overflow-x: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
     </style>
 </head>
-<body class="flex flex-col items-center p-4 pt-12">
+<body class="flex flex-col items-center p-4 pt-10">
 
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-extrabold text-blue-500 tracking-wider">INFORMATION LOOKUP</h1>
-        <p class="text-slate-400 text-xs font-mono mt-1">Raw Stream Integration Panel</p>
+    <div class="flex flex-col items-center mb-10">
+        <div class="img-container">
+            <img src="eshu.webp" alt="ESHU" class="float-img mb-4">
+        </div>
+        <h1 class="shiny-text">ESHU CODEX</h1>
+        <p class="text-slate-400 mt-2">Developed by <span class="text-blue-400">@Eshucording</span></p>
     </div>
 
     <div class="max-w-xl w-full">
-        <div class="glass p-6 rounded-3xl shadow-2xl mb-6">
+        <div id="socialLinks" class="flex flex-col gap-3 mb-8">
+            <a href="https://wa.me/584165280421" target="_blank" class="glow-btn glow-wa flex items-center justify-center gap-3 p-3 rounded-xl font-bold text-green-400">
+                <i class="fab fa-whatsapp text-xl"></i> WHATSAPP
+            </a>
+            <div class="flex gap-3">
+                <a href="https://t.me/eshucordex143" target="_blank" class="glow-btn glow-tg flex-1 flex items-center justify-center gap-3 p-3 rounded-xl font-bold text-blue-400">
+                    <i class="fab fa-telegram-plane"></i> TELEGRAM
+                </a>
+                <a href="https://www.instagram.com/eshucordex?igsh=MWsxMG9tajNlN2p0OA==" target="_blank" class="glow-btn glow-ig flex-1 flex items-center justify-center gap-3 p-3 rounded-xl font-bold text-pink-400">
+                    <i class="fab fa-instagram"></i> INSTAGRAM
+                </a>
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-3xl shadow-2xl mb-8 keyboard-float">
             <div class="flex flex-col sm:flex-row gap-3">
-                <input type="text" id="userInput" placeholder="Enter search parameter..." 
-                    class="flex-1 bg-slate-900/80 border border-slate-700 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white font-mono text-sm">
-                <button onclick="sendApiQuery()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold transition-transform active:scale-95 shadow-lg">
+                <input type="text" id="phoneInput" placeholder="Enter Number (e.g. 80956...)" 
+                    class="flex-1 bg-slate-900/60 border border-slate-700 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white font-mono">
+                <button onclick="fetchData()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-blue-500/20">
                     SEARCH
                 </button>
             </div>
         </div>
 
-        <div id="loadingArea" class="hidden flex flex-col items-center py-12">
-            <div class="loader rounded-full border-4 border-slate-800 h-10 w-10 mb-3"></div>
-            <p class="text-blue-400 font-mono text-xs tracking-widest animate-pulse">REQUESTING DATA...</p>
+        <div id="loading" class="hidden flex flex-col items-center py-12">
+            <div class="loader rounded-full border-4 border-slate-800 h-12 w-12 mb-4"></div>
+            <p class="text-blue-400 animate-pulse font-bold tracking-widest">BYPASSING DATABASE...</p>
         </div>
 
-        <div id="displayCard" class="hidden glass rounded-3xl overflow-hidden shadow-2xl">
+        <div id="resultCard" class="hidden glass rounded-3xl overflow-hidden shadow-2xl mb-10">
             <div class="bg-blue-600/10 border-b border-white/5 px-6 py-4 flex justify-between items-center">
-                <span class="text-blue-400 font-bold text-xs font-mono tracking-widest">LIVE SERVER RESPONSE</span>
-                <span class="text-emerald-400 text-[10px] font-mono">HTTP 200 OK</span>
+                <span class="text-blue-400 font-bold text-xs uppercase tracking-widest">RAW FILTERED OUTPUT</span>
+                <span class="text-slate-500 text-[10px]">Verified: @Eshucording</span>
             </div>
-            
             <div class="p-4">
-                <pre id="rawOutputBlock" class="raw-display p-4 rounded-2xl max-h-[500px] overflow-y-auto"></pre>
+                <pre id="dataContent" class="raw-output p-4 rounded-2xl shadow-inner max-h-[450px] overflow-y-auto"></pre>
             </div>
-            
-            <button onclick="window.location.reload()" class="w-full py-4 bg-slate-900/80 text-xs text-slate-400 hover:text-white font-mono font-bold tracking-wide border-t border-white/5">
-                RESET PANEL
-            </button>
+            <button onclick="window.location.reload()" class="w-full py-4 bg-slate-900/80 text-xs text-slate-400 hover:text-white font-bold tracking-wide transition-colors border-t border-white/5">NEW SEARCH</button>
         </div>
     </div>
 
-    <script>
-        async function sendApiQuery() {
-            const rawValue = document.getElementById('userInput').value.trim();
-            const outputBlock = document.getElementById('rawOutputBlock');
-            const displayCard = document.getElementById('displayCard');
-            const loader = document.getElementById('loadingArea');
-            
-            // Clean up string values cleanly
-            const cleanQuery = rawValue.replace(/\D/g, '');
+    <a href="https://t.me/eshucordex143" target="_blank" class="tg-float-3d">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
 
-            if (cleanQuery.length === 0) {
-                alert("Please enter a valid search target parameter.");
+    <script>
+        async function fetchData() {
+            const input = document.getElementById('phoneInput').value.trim();
+            const content = document.getElementById('dataContent');
+            const card = document.getElementById('resultCard');
+            const loader = document.getElementById('loading');
+            const socials = document.getElementById('socialLinks');
+            
+            let cleanNum = input.replace(/\s+/g, '').replace(/[-+]/g, '');
+            cleanNum = cleanNum.replace(/\D/g, '');
+
+            if (cleanNum.length === 0) {
+                alert("⚠️ Error: Please provide a valid query target.");
                 return;
             }
 
-            // Reset UI Visibility states
-            displayCard.classList.add('hidden');
+            if (cleanNum.length === 10 && !cleanNum.startsWith('91')) {
+                cleanNum = '91' + cleanNum;
+            }
+
+            socials.classList.add('hidden');
+            card.classList.add('hidden');
             loader.classList.remove('hidden');
-            outputBlock.textContent = '';
+            content.textContent = '';
 
             try {
-                // Point directly to the Vercel internal API function path
-                const response = await fetch(`/api/lookup?num=${cleanQuery}`);
-                const dataPayload = await response.json();
+                const response = await fetch(`/api/lookup?num=${cleanNum}`);
+                const resData = await response.json();
 
-                // Convert the raw response object directly into string data text layout
-                outputBlock.textContent = JSON.stringify(dataPayload, null, 2);
-                
-                loader.classList.add('hidden');
-                displayCard.classList.remove('hidden');
+                if (resData.status && resData.data && Object.keys(resData.data).length > 0) {
+                    
+                    // 1. Remove title and description inside source1 dynamically
+                    if (resData.data.source1) {
+                        delete resData.data.source1.title;
+                        delete resData.data.source1.description;
+                    }
+
+                    // 2. Wipe out the entire key_stats block completely
+                    if (resData.key_stats) {
+                        delete resData.key_stats;
+                    }
+
+                    // 3. Inject custom developer signatures and mobile parameters directly
+                    resData.developer = "@Eshucording";
+                    resData.number = "8123561579";
+
+                    // Dump the filtered object into the view frame seamlessly
+                    content.textContent = JSON.stringify(resData, null, 2);
+                    
+                    loader.classList.add('hidden');
+                    card.classList.remove('hidden');
+                } else {
+                    alert("No log profiles identified matching the criteria.");
+                    loader.classList.add('hidden');
+                    socials.classList.remove('hidden');
+                }
             } catch (error) {
                 loader.classList.add('hidden');
-                alert("Error: Failed to fetch. The API might be down or blocked.");
-                console.error("Fetch Exception: ", error);
+                socials.classList.remove('hidden');
+                alert("Upstream pipeline network layer connection exception.");
             }
         }
     </script>
