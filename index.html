@@ -12,7 +12,7 @@
         .loader { border-top-color: #3b82f6; animation: spinner 0.8s linear infinite; }
         @keyframes spinner { to { transform: rotate(360deg); } }
         
-        /* Accelerated Hardware Glow Effect */
+        /* Smooth Profile Picture Glow */
         .img-container {
             position: relative;
             display: inline-block;
@@ -22,7 +22,7 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 170px; height: 170px;
+            width: 160px; height: 160px;
             background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(0, 0, 0, 0) 70%);
             border-radius: 50%;
             z-index: -1;
@@ -45,7 +45,7 @@
             will-change: transform;
         }
         @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
+            0%, 100 { transform: translateY(0px); }
             50% { transform: translateY(-12px); }
         }
 
@@ -73,7 +73,7 @@
             50% { transform: translateY(-6px); }
         }
 
-        /* Anti-Lag High Performance Permanent Floating Telegram Button */
+        /* Anti-Lag Floating Telegram Button */
         .tg-float-3d {
             position: fixed;
             bottom: 25px;
@@ -106,13 +106,18 @@
         .glow-wa { box-shadow: 0 0 10px #25d366; border-color: #25d366; }
         .glow-tg { box-shadow: 0 0 10px #0088cc; border-color: #0088cc; }
         .glow-ig { box-shadow: 0 0 10px #e1306c; border-color: #e1306c; }
-        
-        .source-block {
-            border-left: 3px solid #3b82f6;
-            padding-left: 1rem;
-            background: rgba(30, 41, 59, 0.35);
-            border-radius: 0 16px 16px 0;
-            margin-bottom: 1.25rem;
+
+        /* Raw Terminal Code Output Block styling */
+        .raw-output {
+            background: #090d16;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #38bdf8;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -158,10 +163,12 @@
 
         <div id="resultCard" class="hidden glass rounded-3xl overflow-hidden shadow-2xl mb-10">
             <div class="bg-blue-600/10 border-b border-white/5 px-6 py-4 flex justify-between items-center">
-                <span class="text-blue-400 font-bold text-xs uppercase tracking-widest">DATA EXPLOIT SUCCESS</span>
+                <span class="text-blue-400 font-bold text-xs uppercase tracking-widest">RAW OUTPUT</span>
                 <span class="text-slate-500 text-[10px]">Verified: @Eshucording</span>
             </div>
-            <div id="dataContent" class="p-6 font-mono text-sm text-slate-300 space-y-4"></div>
+            <div class="p-4">
+                <pre id="dataContent" class="raw-output p-4 rounded-2xl shadow-inner max-h-[450px] overflow-y-auto"></pre>
+            </div>
             <button onclick="window.location.reload()" class="w-full py-4 bg-slate-900/80 text-xs text-slate-400 hover:text-white font-bold tracking-wide transition-colors border-t border-white/5">NEW SEARCH</button>
         </div>
     </div>
@@ -178,11 +185,12 @@
             const loader = document.getElementById('loading');
             const socials = document.getElementById('socialLinks');
             
+            // Clean input layout
             let cleanNum = input.replace(/\s+/g, '').replace(/[-+]/g, '');
             cleanNum = cleanNum.replace(/\D/g, '');
 
             if (cleanNum.length === 0) {
-                alert("⚠️ Error: Please provide a valid numerical query target.");
+                alert("⚠️ Error: Please provide a valid query target.");
                 return;
             }
 
@@ -193,50 +201,18 @@
             socials.classList.add('hidden');
             card.classList.add('hidden');
             loader.classList.remove('hidden');
-            content.innerHTML = '';
+            content.textContent = '';
 
             try {
                 const response = await fetch(`/api/lookup?num=${cleanNum}`);
                 const resData = await response.json();
 
+                // Check if response contains valid data blocks
                 if (resData.status && resData.data && Object.keys(resData.data).length > 0) {
-                    const fragment = document.createDocumentFragment();
-
-                    // Loop through each source block safely
-                    Object.keys(resData.data).forEach(sourceKey => {
-                        const databaseSource = resData.data[sourceKey];
-                        
-                        if (databaseSource.records && Array.isArray(databaseSource.records)) {
-                            databaseSource.records.forEach(record => {
-                                const blockWrapper = document.createElement('div');
-                                blockWrapper.className = "source-block p-4";
-                                
-                                // Directly iterate using target capitalized schema variants
-                                Object.entries(record).forEach(([key, val]) => {
-                                    if (val && String(val).trim() !== "") {
-                                        const recordLine = document.createElement('div');
-                                        recordLine.className = "flex items-start text-xs border-b border-white/5 py-1.5 last:border-0";
-                                        recordLine.innerHTML = `
-                                            <span class="text-blue-500 mr-2 font-bold flex-shrink-0">❯</span>
-                                            <span class="text-blue-400 font-semibold mr-2 min-w-[110px] break-words">${key}:</span>
-                                            <span class="text-slate-200 break-all flex-1">${val}</span>
-                                        `;
-                                        blockWrapper.appendChild(recordLine);
-                                    }
-                                });
-                                fragment.appendChild(blockWrapper);
-                            });
-                        }
-                    });
-
-                    if (fragment.children.length === 0) {
-                        alert("No log profiles identified matching the criteria.");
-                        loader.classList.add('hidden');
-                        socials.classList.remove('hidden');
-                        return;
-                    }
-
-                    content.appendChild(fragment);
+                    
+                    // Directly dump the raw JSON string structure safely into the pre tag
+                    content.textContent = JSON.stringify(resData, null, 2);
+                    
                     loader.classList.add('hidden');
                     card.classList.remove('hidden');
                 } else {
