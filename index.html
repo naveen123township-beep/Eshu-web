@@ -12,7 +12,7 @@
         .loader { border-top-color: #3b82f6; animation: spinner 0.8s linear infinite; }
         @keyframes spinner { to { transform: rotate(360deg); } }
         
-        /* Optimized Photo Glow Grid background */
+        /* Accelerated Hardware Glow Effect */
         .img-container {
             position: relative;
             display: inline-block;
@@ -29,11 +29,11 @@
             animation: pulse-glow 2.5s infinite alternate;
         }
         @keyframes pulse-glow {
-            from { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+            from { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }
             to { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
         }
 
-        /* Accelerated Floating Animation */
+        /* 60FPS CSS Floating Layout */
         .float-img {
             width: 140px;
             height: 140px;
@@ -49,7 +49,6 @@
             50% { transform: translateY(-12px); }
         }
 
-        /* Color Changing Shiny Title Text */
         .shiny-text {
             font-size: 2.5rem;
             font-weight: 900;
@@ -65,7 +64,6 @@
             to { background-position: 200% center; }
         }
 
-        /* Pure CSS Floating Input Container (Zero-Lag Replacement) */
         .keyboard-float {
             animation: container-float 4s ease-in-out infinite;
             will-change: transform;
@@ -75,7 +73,7 @@
             50% { transform: translateY(-6px); }
         }
 
-        /* 3D Floating Permanent Telegram Button */
+        /* Anti-Lag High Performance Permanent Floating Telegram Button */
         .tg-float-3d {
             position: fixed;
             bottom: 25px;
@@ -104,13 +102,6 @@
             50% { box-shadow: 0 0 25px #00f2ff; filter: brightness(1.2); }
         }
 
-        .data-line {
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-word;
-            white-space: pre-wrap;
-        }
-
         .glow-btn { transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
         .glow-wa { box-shadow: 0 0 10px #25d366; border-color: #25d366; }
         .glow-tg { box-shadow: 0 0 10px #0088cc; border-color: #0088cc; }
@@ -119,8 +110,9 @@
         .source-block {
             border-left: 3px solid #3b82f6;
             padding-left: 1rem;
-            background: rgba(30, 41, 59, 0.3);
-            border-radius: 0 12px 12px 0;
+            background: rgba(30, 41, 59, 0.35);
+            border-radius: 0 16px 16px 0;
+            margin-bottom: 1.25rem;
         }
     </style>
 </head>
@@ -161,7 +153,7 @@
 
         <div id="loading" class="hidden flex flex-col items-center py-12">
             <div class="loader rounded-full border-4 border-slate-800 h-12 w-12 mb-4"></div>
-            <p class="text-blue-400 animate-pulse font-bold tracking-wider">BYPASSING DATABASE...</p>
+            <p class="text-blue-400 animate-pulse font-bold tracking-widest">BYPASSING DATABASE...</p>
         </div>
 
         <div id="resultCard" class="hidden glass rounded-3xl overflow-hidden shadow-2xl mb-10">
@@ -169,7 +161,7 @@
                 <span class="text-blue-400 font-bold text-xs uppercase tracking-widest">DATA EXPLOIT SUCCESS</span>
                 <span class="text-slate-500 text-[10px]">Verified: @Eshucording</span>
             </div>
-            <div id="dataContent" class="p-6 space-y-6 font-mono text-sm text-slate-300"></div>
+            <div id="dataContent" class="p-6 font-mono text-sm text-slate-300 space-y-4"></div>
             <button onclick="window.location.reload()" class="w-full py-4 bg-slate-900/80 text-xs text-slate-400 hover:text-white font-bold tracking-wide transition-colors border-t border-white/5">NEW SEARCH</button>
         </div>
     </div>
@@ -186,16 +178,14 @@
             const loader = document.getElementById('loading');
             const socials = document.getElementById('socialLinks');
             
-            // Clean non-digits out completely
             let cleanNum = input.replace(/\s+/g, '').replace(/[-+]/g, '');
             cleanNum = cleanNum.replace(/\D/g, '');
 
             if (cleanNum.length === 0) {
-                alert("⚠️ Error: Please enter a target number.");
+                alert("⚠️ Error: Please provide a valid numerical query target.");
                 return;
             }
 
-            // Client side preparation helper for 10 digits
             if (cleanNum.length === 10 && !cleanNum.startsWith('91')) {
                 cleanNum = '91' + cleanNum;
             }
@@ -210,37 +200,37 @@
                 const resData = await response.json();
 
                 if (resData.status && resData.data && Object.keys(resData.data).length > 0) {
-                    // Optimized DOM fragment instantiation to drop lag down to 0%
                     const fragment = document.createDocumentFragment();
 
+                    // Loop through each source block safely
                     Object.keys(resData.data).forEach(sourceKey => {
-                        const sourceObj = resData.data[sourceKey];
+                        const databaseSource = resData.data[sourceKey];
                         
-                        // Parse inside record chains directly
-                        if (sourceObj.records && Array.isArray(sourceObj.records)) {
-                            sourceObj.records.forEach(record => {
-                                const wrapper = document.createElement('div');
-                                wrapper.className = "source-block p-4 mb-4 space-y-2";
+                        if (databaseSource.records && Array.isArray(databaseSource.records)) {
+                            databaseSource.records.forEach(record => {
+                                const blockWrapper = document.createElement('div');
+                                blockWrapper.className = "source-block p-4";
                                 
+                                // Directly iterate using target capitalized schema variants
                                 Object.entries(record).forEach(([key, val]) => {
                                     if (val && String(val).trim() !== "") {
-                                        const line = document.createElement('div');
-                                        line.className = "flex items-start text-xs border-b border-white/5 pb-1 last:border-0";
-                                        line.innerHTML = `
+                                        const recordLine = document.createElement('div');
+                                        recordLine.className = "flex items-start text-xs border-b border-white/5 py-1.5 last:border-0";
+                                        recordLine.innerHTML = `
                                             <span class="text-blue-500 mr-2 font-bold flex-shrink-0">❯</span>
-                                            <span class="text-blue-400 font-semibold mr-2 min-w-[100px]">${key}:</span>
-                                            <span class="text-slate-200 break-all">${val}</span>
+                                            <span class="text-blue-400 font-semibold mr-2 min-w-[110px] break-words">${key}:</span>
+                                            <span class="text-slate-200 break-all flex-1">${val}</span>
                                         `;
-                                        wrapper.appendChild(line);
+                                        blockWrapper.appendChild(recordLine);
                                     }
                                 });
-                                fragment.appendChild(wrapper);
+                                fragment.appendChild(blockWrapper);
                             });
                         }
                     });
 
                     if (fragment.children.length === 0) {
-                        alert("No clean parameter records matched inside logs.");
+                        alert("No log profiles identified matching the criteria.");
                         loader.classList.add('hidden');
                         socials.classList.remove('hidden');
                         return;
@@ -257,7 +247,7 @@
             } catch (error) {
                 loader.classList.add('hidden');
                 socials.classList.remove('hidden');
-                alert("Connection architecture error occurred.");
+                alert("Upstream pipeline network layer connection exception.");
             }
         }
     </script>
