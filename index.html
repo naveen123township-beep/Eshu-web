@@ -68,6 +68,7 @@
         .keyboard-float {
             animation: k-float 4s ease-in-out infinite;
             transform-style: preserve-3d;
+            will-change: transform; /* Optimized Rendering Fix */
         }
 
         @keyframes k-float {
@@ -111,14 +112,19 @@
             overflow-wrap: break-word;
             word-break: break-word;
             white-space: pre-wrap;
-            display: flex;
-            align-items: flex-start;
+            display: block;
         }
 
         .glow-btn { transition: 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
         .glow-wa { box-shadow: 0 0 10px #25d366; border-color: #25d366; }
         .glow-tg { box-shadow: 0 0 10px #0088cc; border-color: #0088cc; }
         .glow-ig { box-shadow: 0 0 10px #e1306c; border-color: #e1306c; }
+        
+        .source-container {
+            border-left: 3px solid #3b82f6;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body class="flex flex-col items-center p-4 pt-10">
@@ -148,7 +154,7 @@
 
         <div class="glass p-8 rounded-3xl shadow-2xl mb-8 keyboard-float" data-tilt data-tilt-max="15">
             <div class="flex flex-col sm:flex-row gap-3">
-                <input type="text" id="phoneInput" placeholder="Enter Number (+91...)" 
+                <input type="text" id="phoneInput" placeholder="Enter Number (e.g. 80956...)" 
                     class="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
                 <button onclick="fetchData()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-blue-500/20">
                     SEARCH
@@ -166,7 +172,7 @@
                 <span class="text-blue-400 font-bold text-xs uppercase tracking-tighter">DATA EXPLOIT SUCCESS</span>
                 <span class="text-slate-500 text-[10px]">Verified: @Eshucording</span>
             </div>
-            <div id="dataContent" class="p-6 space-y-4 font-mono text-sm text-slate-300"></div>
+            <div id="dataContent" class="p-6 space-y-6 font-mono text-sm text-slate-300"></div>
             <button onclick="window.location.reload()" class="w-full py-3 bg-slate-800 text-xs text-slate-400 hover:text-white transition-colors">NEW SEARCH</button>
         </div>
     </div>
@@ -190,14 +196,18 @@
             const loader = document.getElementById('loading');
             const socials = document.getElementById('socialLinks');
             
-            let cleanNum = input.trim().replace(/\s+/g, '').replace(/-/g, '');
-            if (cleanNum.startsWith('+91')) cleanNum = cleanNum.substring(3);
-            else if (cleanNum.startsWith('91') && cleanNum.length > 10) cleanNum = cleanNum.substring(2);
-            cleanNum = cleanNum.replace(/\D/g, '');
+            // Clean out all non-digits, strips explicit signs
+            let cleanNum = input.trim().replace(/\s+/g, '').replace(/[-+]/g, '');
+            cleanNum = cleanNum.replace(/\D/g, ''); 
 
-            if (cleanNum.length !== 10) {
-                alert("⚠️ Error: Target number must be 10 digits.");
+            if (cleanNum.length === 0) {
+                alert("⚠️ Error: Enter a valid number.");
                 return;
+            }
+
+            // Normalization: If user omits '91', implicitly prefix it
+            if (!cleanNum.startsWith('91') && cleanNum.length === 10) {
+                cleanNum = '91' + cleanNum;
             }
 
             socials.classList.add('hidden');
@@ -207,32 +217,68 @@
 
             try {
                 const response = await fetch(`/api/lookup?num=${cleanNum}`);
-                const data = await response.json();
+                const resData = await response.json();
 
-                if (data.result && data.result.length > 0) {
-                    data.result.forEach(line => {
-                        const trimmedLine = line.trim();
-                        if (trimmedLine !== "" && !trimmedLine.includes('---') && !trimmedLine.includes('@proportalx')) {
-                            const div = document.createElement('div');
-                            div.className = "data-line border-b border-white/5 pb-3 last:border-0";
-                            div.innerHTML = `<span class="text-blue-500 mr-2 flex-shrink-0">❯</span><span>${trimmedLine}</span>`;
-                            content.appendChild(div);
+                if (resData.status && resData.data && Object.keys(resData.data).length > 0) {
+                    const fragment = document.createDocumentFragment();
+
+                    // Map through each database block dynamically
+                    Object.keys(resData.data).forEach(sourceKey => {
+                        const currentSource = resData.data[sourceKey];
+                        
+                        // Main Structural Container for individual log sources
+                        const sourceWrapper = document.createElement('div');
+                        sourceWrapper.className = "source-container mb-6 border-l-2 border-blue-500 pl-4";
+
+                        // Header component layout
+                        const header = document.createElement('div');
+                        header.className = "text-blue-400 font-bold text-base mb-1 flex items-center gap-2";
+                        header.innerHTML = `<span class="text-xs">❯</span> ${currentSource.title || sourceKey}`;
+                        sourceWrapper.appendChild(header);
+
+                        // Safe handling of embedded collection datasets
+                        if (Array.isArray(currentSource.records) && currentSource.records.length > 0) {
+                            currentSource.records.forEach(record => {
+                                Object.entries(record).forEach(([key, val]) => {
+                                    if (val && String(val).trim() !== "") {
+                                        const line = document.createElement('div');
+                                        line.className = "data-line text-slate-300 font-mono text-xs py-1 border-b border-white/5";
+                                        
+                                        // Mask Aadhaar numbers from any explicit leakage source layout safely
+                                        let finalValue = val;
+                                        if (key === "DocumentNumber") {
+                                            finalValue = "[REDACTED BY ESHU CODEX]";
+                                        }
+
+                                        line.innerHTML = `<span class="text-blue-500 font-bold mr-2">${key}:</span><span>${finalValue}</span>`;
+                                        sourceWrapper.appendChild(line);
+                                    }
+                                });
+                            });
+                        } else {
+                            const emptyLine = document.createElement('div');
+                            emptyLine.className = "text-slate-500 italic text-xs";
+                            emptyLine.innerText = "No structured parameters found inside logs.";
+                            sourceWrapper.appendChild(emptyLine);
                         }
+
+                        fragment.appendChild(sourceWrapper);
                     });
+
+                    content.appendChild(fragment);
                     loader.classList.add('hidden');
                     card.classList.remove('hidden');
                 } else {
-                    alert("No data found.");
+                    alert("No log logs identified matching the criteria.");
                     loader.classList.add('hidden');
                     socials.classList.remove('hidden');
                 }
             } catch (error) {
                 loader.classList.add('hidden');
                 socials.classList.remove('hidden');
-                alert("Connection Error.");
+                alert("Connection failed while executing API pipeline verification.");
             }
         }
     </script>
 </body>
-  </html>
-  
+</html>
