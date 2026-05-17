@@ -12,7 +12,7 @@
         .loader { border-top-color: #3b82f6; animation: spinner 0.8s linear infinite; }
         @keyframes spinner { to { transform: rotate(360deg); } }
         
-        /* Smooth Profile Picture Glow */
+        /* Profile Image Glow Style */
         .img-container {
             position: relative;
             display: inline-block;
@@ -33,7 +33,7 @@
             to { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
         }
 
-        /* 60FPS CSS Floating Layout */
+        /* Float Animations */
         .float-img {
             width: 140px;
             height: 140px;
@@ -73,7 +73,7 @@
             50% { transform: translateY(-6px); }
         }
 
-        /* Anti-Lag Floating Telegram Button */
+        /* Fixed 3D Telegram Quick Button */
         .tg-float-3d {
             position: fixed;
             bottom: 25px;
@@ -107,17 +107,13 @@
         .glow-tg { box-shadow: 0 0 10px #0088cc; border-color: #0088cc; }
         .glow-ig { box-shadow: 0 0 10px #e1306c; border-color: #e1306c; }
 
-        /* Raw Terminal Code Output Block styling */
-        .raw-output {
-            background: #090d16;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            color: #38bdf8;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-            line-height: 1.6;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        /* Line by line display card layouts */
+        .info-card {
+            background: rgba(15, 23, 42, 0.65);
+            border-left: 4px solid #3b82f6;
+            border-radius: 0 16px 16px 0;
+            padding: 16px;
+            margin-bottom: 16px;
         }
     </style>
 </head>
@@ -163,12 +159,12 @@
 
         <div id="resultCard" class="hidden glass rounded-3xl overflow-hidden shadow-2xl mb-10">
             <div class="bg-blue-600/10 border-b border-white/5 px-6 py-4 flex justify-between items-center">
-                <span class="text-blue-400 font-bold text-xs uppercase tracking-widest">RAW FILTERED OUTPUT</span>
-                <span class="text-slate-500 text-[10px]">Verified: @Eshucording</span>
+                <span class="text-blue-400 font-bold text-xs uppercase tracking-widest">PROCESSED DATA FEED</span>
+                <span id="footerDev" class="text-slate-400 font-mono text-[11px]"></span>
             </div>
-            <div class="p-4">
-                <pre id="dataContent" class="raw-output p-4 rounded-2xl shadow-inner max-h-[450px] overflow-y-auto"></pre>
-            </div>
+            
+            <div id="dataContent" class="p-5 space-y-4 max-h-[550px] overflow-y-auto"></div>
+            
             <button onclick="window.location.reload()" class="w-full py-4 bg-slate-900/80 text-xs text-slate-400 hover:text-white font-bold tracking-wide transition-colors border-t border-white/5">NEW SEARCH</button>
         </div>
     </div>
@@ -178,18 +174,39 @@
     </a>
 
     <script>
+        // Dictionary to assign attractive icons to common record fields dynamically
+        const emojiMap = {
+            "Phone": "📱 Phone",
+            "Phone2": "📱 Alt Phone 1",
+            "Phone3": "📱 Alt Phone 2",
+            "FullName": "👤 Name",
+            "FatherName": "👨 Father Name",
+            "DocumentNumber": "🪪 Gov ID / Aadhaar",
+            "Adres": "📍 Address Primary",
+            "Adres2": "📍 Address Secondary",
+            "Region": "🗺️ State Region",
+            "Email": "📧 Email Address",
+            "RegistrationDate": "📅 Joined Date",
+            "IP": "🌐 IP Location",
+            "Currency": "💵 Currency",
+            "Country": "🏳️ Country",
+            "Sum": "💰 Account Balance",
+            "EncryptedPassword": "🔑 Password Hash"
+        };
+
         async function fetchData() {
             const input = document.getElementById('phoneInput').value.trim();
             const content = document.getElementById('dataContent');
             const card = document.getElementById('resultCard');
             const loader = document.getElementById('loading');
             const socials = document.getElementById('socialLinks');
+            const footerDev = document.getElementById('footerDev');
             
             let cleanNum = input.replace(/\s+/g, '').replace(/[-+]/g, '');
             cleanNum = cleanNum.replace(/\D/g, '');
 
             if (cleanNum.length === 0) {
-                alert("⚠️ Error: Please provide a valid query target.");
+                alert("⚠️ Error: Please provide a valid numerical target query.");
                 return;
             }
 
@@ -200,32 +217,59 @@
             socials.classList.add('hidden');
             card.classList.add('hidden');
             loader.classList.remove('hidden');
-            content.textContent = '';
+            content.innerHTML = '';
 
             try {
                 const response = await fetch(`/api/lookup?num=${cleanNum}`);
                 const resData = await response.json();
 
                 if (resData.status && resData.data && Object.keys(resData.data).length > 0) {
-                    
-                    // 1. Remove title and description inside source1 dynamically
-                    if (resData.data.source1) {
-                        delete resData.data.source1.title;
-                        delete resData.data.source1.description;
+                    const fragment = document.createDocumentFragment();
+
+                    // Apply layout preferences: strip administrative tracking blocks
+                    if (resData.key_stats) delete resData.key_stats;
+
+                    // Iterate over available source collections safely
+                    Object.keys(resData.data).forEach(sourceKey => {
+                        const currentSource = resData.data[sourceKey];
+                        
+                        if (currentSource.records && Array.isArray(currentSource.records)) {
+                            currentSource.records.forEach(record => {
+                                const cardBlock = document.createElement('div');
+                                cardBlock.className = "info-card";
+
+                                // Step line-by-line through fields to build highly visible, readable text blocks
+                                Object.entries(record).forEach(([key, val]) => {
+                                    if (val && String(val).trim() !== "") {
+                                        // Fetch styled emoji prefix or fallback to plain label key
+                                        const displayLabel = emojiMap[key] || `🔹 ${key}`;
+                                        
+                                        const fieldLine = document.createElement('div');
+                                        fieldLine.className = "flex flex-col border-b border-white/5 py-2 last:border-0";
+                                        
+                                        fieldLine.innerHTML = `
+                                            <span class="text-blue-400 font-bold text-xs uppercase tracking-wide mb-0.5">${displayLabel}</span>
+                                            <span class="text-slate-100 font-medium text-sm break-words tracking-wide leading-relaxed">${val}</span>
+                                        `;
+                                        cardBlock.appendChild(fieldLine);
+                                    }
+                                });
+                                fragment.appendChild(cardBlock);
+                            });
+                        }
+                    });
+
+                    if (fragment.children.length === 0) {
+                        alert("No clean database records found matching this number.");
+                        loader.classList.add('hidden');
+                        socials.classList.remove('hidden');
+                        return;
                     }
 
-                    // 2. Wipe out the entire key_stats block completely
-                    if (resData.key_stats) {
-                        delete resData.key_stats;
-                    }
+                    // Display Developer signature data onto panel meta header
+                    footerDev.textContent = "DEV: @Eshucording | 8123561579";
 
-                    // 3. Inject custom developer signatures and mobile parameters directly
-                    resData.developer = "@Eshucording";
-                    resData.number = "8123561579";
-
-                    // Dump the filtered object into the view frame seamlessly
-                    content.textContent = JSON.stringify(resData, null, 2);
-                    
+                    content.appendChild(fragment);
                     loader.classList.add('hidden');
                     card.classList.remove('hidden');
                 } else {
@@ -236,7 +280,7 @@
             } catch (error) {
                 loader.classList.add('hidden');
                 socials.classList.remove('hidden');
-                alert("Upstream pipeline network layer connection exception.");
+                alert("Upstream interface connection layer timed out.");
             }
         }
     </script>
